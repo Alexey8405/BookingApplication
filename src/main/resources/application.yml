@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: booking-system
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/booking_db
+    username: booking_user
+    password: booking_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+  sql:
+    init:
+      mode: always
+      platform: postgresql
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/booking_stats
+      auto-index-creation: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: booking-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.booking.kafka.event"
+        spring.json.type.mapping: "userRegisteredEvent:com.booking.kafka.event.UserRegisteredEvent,roomBookedEvent:com.booking.kafka.event.RoomBookedEvent"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.booking: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: INFO
+    org.springframework.kafka: INFO

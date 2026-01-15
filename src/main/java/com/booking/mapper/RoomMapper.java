@@ -1,0 +1,31 @@
+package com.booking.mapper;
+
+import com.booking.dto.RoomDto;
+import com.booking.dto.RoomRequest;
+import com.booking.dto.RoomResponse;
+import com.booking.entity.Room;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+@Mapper(componentModel = "spring")
+public interface RoomMapper {
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "hotel", ignore = true)
+    @Mapping(target = "bookings", ignore = true)
+    @Mapping(target = "unavailableDates", ignore = true)
+    Room toEntity(RoomRequest request);
+
+    RoomDto toDto(Room room);
+
+    @Mapping(source = "hotel.id", target = "hotelId")
+    @Mapping(source = "hotel.name", target = "hotelName")
+    RoomResponse toResponse(Room room);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "hotel", ignore = true)
+    @Mapping(target = "bookings", ignore = true)
+    @Mapping(target = "unavailableDates", ignore = true)
+    void updateEntity(RoomRequest request, @MappingTarget Room room);
+}
