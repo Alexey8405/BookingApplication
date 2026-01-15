@@ -19,11 +19,9 @@ public class StatisticsService {
         List<StatisticsEvent> events = statisticsRepository.findAll();
 
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
-            // Write header
             String[] header = {"ID", "Event Type", "User ID", "Check-In Date", "Check-Out Date", "Registration Date", "Timestamp"};
             csvWriter.writeNext(header);
 
-            // Write data
             for (StatisticsEvent event : events) {
                 String[] data = {
                         event.getId(),

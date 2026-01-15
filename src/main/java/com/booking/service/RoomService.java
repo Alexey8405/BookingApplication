@@ -39,7 +39,6 @@ public class RoomService {
         Room room = roomMapper.toEntity(request);
         room.setHotel(hotel);
 
-        // Convert string dates to LocalDate
         if (request.getUnavailableDates() != null) {
             List<LocalDate> unavailableDates = request.getUnavailableDates().stream()
                     .map(date -> LocalDate.parse(date, DateTimeFormatter.ISO_DATE))
@@ -61,7 +60,6 @@ public class RoomService {
         roomMapper.updateEntity(request, room);
         room.setHotel(hotel);
 
-        // Update unavailable dates
         if (request.getUnavailableDates() != null) {
             List<LocalDate> unavailableDates = request.getUnavailableDates().stream()
                     .map(date -> LocalDate.parse(date, DateTimeFormatter.ISO_DATE))

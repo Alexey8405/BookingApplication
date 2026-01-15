@@ -36,7 +36,6 @@ public class BookingService {
 
     @Transactional
     public BookingResponse createBooking(BookingRequest request, String username) {
-        // Validate dates
         LocalDate checkIn = request.getCheckInDate();
         LocalDate checkOut = request.getCheckOutDate();
 
@@ -48,11 +47,9 @@ public class BookingService {
             throw new ValidationException("Check-out date must be after check-in date");
         }
 
-        // Find room
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + request.getRoomId()));
 
-        // Check room availability
         boolean isAvailable = roomRepository.isRoomAvailable(
                 room.getId(),
                 checkIn,
@@ -63,11 +60,9 @@ public class BookingService {
             throw new ValidationException("Room is not available for the selected dates");
         }
 
-        // Find user
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
 
-        // Create booking
         Booking booking = new Booking();
         booking.setCheckInDate(checkIn);
         booking.setCheckOutDate(checkOut);
@@ -76,7 +71,6 @@ public class BookingService {
 
         Booking saved = bookingRepository.save(booking);
 
-        // Send Kafka event (можно закомментировать если Kafka не настроен)
         try {
             RoomBookedEvent event = new RoomBookedEvent();
             event.setUserId(user.getId());
@@ -85,7 +79,6 @@ public class BookingService {
             event.setTimestamp(LocalDate.now());
             statisticsProducer.sendRoomBookedEvent(event);
         } catch (Exception e) {
-            // Просто логируем ошибку, но не прерываем выполнение
             System.err.println("Failed to send Kafka event: " + e.getMessage());
         }
 
@@ -101,10 +94,8 @@ public class BookingService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
 
-        // Получаем все бронирования
         Page<Booking> bookingsPage = bookingRepository.findAll(pageable);
 
-        // Фильтруем на Java уровне (не самый эффективный, но рабочий вариант)
         List<BookingResponse> userBookings = bookingsPage.getContent().stream()
                 .filter(booking -> booking.getUser().getId().equals(user.getId()))
                 .map(bookingMapper::toResponse)

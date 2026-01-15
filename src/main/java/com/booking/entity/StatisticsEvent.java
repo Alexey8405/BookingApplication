@@ -17,7 +17,7 @@ public class StatisticsEvent {
     @Id
     private String id;
 
-    private String eventType; // "USER_REGISTERED" or "ROOM_BOOKED"
+    private String eventType;
     private Long userId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;

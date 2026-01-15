@@ -39,12 +39,10 @@ public class UserService {
 
     @Transactional
     public UserResponse create(UserRequest request) {
-        // Check if username already exists
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new ValidationException("Username already exists: " + request.getUsername());
         }
 
-        // Check if email already exists
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ValidationException("Email already exists: " + request.getEmail());
         }
@@ -54,7 +52,6 @@ public class UserService {
 
         User saved = userRepository.save(user);
 
-        // Send Kafka event
         UserRegisteredEvent event = new UserRegisteredEvent();
         event.setUserId(saved.getId());
         event.setRegistrationDate(LocalDate.now());
@@ -68,13 +65,11 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        // Check if new username conflicts with existing user
         if (!user.getUsername().equals(request.getUsername())
                 && userRepository.existsByUsername(request.getUsername())) {
             throw new ValidationException("Username already exists: " + request.getUsername());
         }
 
-        // Check if new email conflicts with existing user
         if (!user.getEmail().equals(request.getEmail())
                 && userRepository.existsByEmail(request.getEmail())) {
             throw new ValidationException("Email already exists: " + request.getEmail());

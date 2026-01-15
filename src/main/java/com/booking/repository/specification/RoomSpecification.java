@@ -56,7 +56,6 @@ public class RoomSpecification {
                 ));
             }
 
-            // Фильтрация по датам (только если указаны обе даты)
             if (filter.getCheckInDate() != null && filter.getCheckOutDate() != null) {
                 Subquery<Long> subquery = query.subquery(Long.class);
                 Root<Booking> bookingRoot = subquery.from(Booking.class);
